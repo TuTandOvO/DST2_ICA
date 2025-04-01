@@ -7,7 +7,18 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
 <%@ page isELIgnored="false" %>
+
+<sql:setDataSource
+        var="dataSource"
+        driver="com.mysql.cj.jdbc.Driver"
+        url="jdbc:mysql://localhost:3306/biomed?serverTimezone=Asia/Shanghai&useSSL=false"
+        user="biomed"
+        password="biomed"/>
+<sql:query dataSource="${dataSource}" var="drugs">
+    select * from drug
+</sql:query>
 
 <!doctype html>
 <html lang="en">
@@ -66,7 +77,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach items="${drugs}" var="item">
+                    <c:forEach items="${drugs.rows}" var="item">
                         <tr>
                             <td>${item.id}</td>
                             <td>${item.name}</td>
