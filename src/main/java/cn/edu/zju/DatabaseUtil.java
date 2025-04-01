@@ -8,8 +8,43 @@ public class DatabaseUtil {
     private static final String USER = "biomed";
     private static final String PASSWORD = "biomed";
 
+    public static void main(String[] args) {
+        // 1️⃣ 测试数据库连接
+        if (testConnection()) {
+            System.out.println("✅ 成功连接到数据库！");
+
+            // 2️⃣ 读取数据库数据
+            List<Map<String, String>> dataList = queryDatabase();
+
+            if (!dataList.isEmpty()) {
+                System.out.println("✅ 数据成功读取，共 " + dataList.size() + " 条记录。");
+            } else {
+                System.out.println("⚠️ 读取成功，但查询结果为空！");
+            }
+        } else {
+            System.out.println("❌ 无法连接到数据库！");
+        }
+    }
+
+    /**
+     * 测试数据库连接是否成功
+     */
+    public static boolean testConnection() {
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            return connection != null;
+        } catch (SQLException e) {
+            System.err.println("❌ 数据库连接失败：" + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 查询数据库数据
+     */
     public static List<Map<String, String>> queryDatabase() {
         List<Map<String, String>> dataList = new ArrayList<>();
+
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM drug")) {
@@ -24,40 +59,12 @@ public class DatabaseUtil {
                 }
                 dataList.add(row);
             }
+
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.err.println("SQL Error: " + e.getMessage());
-        } catch (Exception e) {
+            System.err.println("❌ SQL 查询失败：" + e.getMessage());
             e.printStackTrace();
         }
+
         return dataList;
-    }
-}
-class databaseconnection {
-    public static void main(String[] args) {
-        String url = "jdbc:mysql://localhost:3306/biomed?serverTimezone=Asia/Shanghai";
-        String user = "biomed";
-        String password = "biomed";
-
-        try {
-            // 加载MySQL驱动
-            Class.forName("com.mysql.cj.jdbc.Driver");
-
-            // 建立连接
-            Connection connection = DriverManager.getConnection(url, user, password);
-
-            // 创建Statement对象
-            Statement statement = connection.createStatement();
-
-            // 执行查询
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM drug");
-
-            // 关闭连接
-            resultSet.close();
-            statement.close();
-            connection.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
