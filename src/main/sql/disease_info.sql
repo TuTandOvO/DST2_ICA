@@ -571,7 +571,6 @@ INSERT INTO `disease_info` (`disease_id`, `disease_name`) VALUES
                                                               ('PA166129560', 'Major Adverse Cardiac Events (MACE)'),
                                                               ('PA444255', 'Gastroesophageal Reflux'),
                                                               ('PA166123007', 'hematopoietic stem cell transplantation'),
-                                                              ('PA445850', 'Thrombotic disease'),
                                                               ('PA443622', 'Non-Small Cell Lung Carcinoma'),
                                                               ('PA166120929', 'Severe Cutaneous Adverse Reactions'),
                                                               ('PA447321', 'Major Depressive Disorder'),
