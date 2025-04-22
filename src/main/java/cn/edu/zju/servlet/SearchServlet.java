@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @WebServlet("/search")
 public class SearchServlet extends HttpServlet {
@@ -69,6 +70,46 @@ public class SearchServlet extends HttpServlet {
                     log.error("Error during query execution", e);
                 }
             });
+        }
+
+        if (!results.isEmpty() && (database.equals("drug") || table.equals("drug"))) {
+            List<Map<String, Object>> drugGeneRelations = new ArrayList<>();
+
+            DBUtils.execSQL(conn -> {
+                String drugGeneQuery =
+                        "SELECT d.id as drug_id, d.name as drug_name, " +
+                                "g.id as gene_id, g.symbol as gene_name " +
+                                "FROM drug d " +
+                                "JOIN drug_gene dg ON d.id = dg.drug_id " +
+                                "JOIN gene_info g ON dg.gene_id = g.id " +
+                                "WHERE d.id IN (" +
+                                results.stream()
+                                        .map(row -> "?")
+                                        .collect(Collectors.joining(",")) +
+                                ")";
+
+                try (PreparedStatement stmt = conn.prepareStatement(drugGeneQuery)) {
+                    int paramIndex = 1;
+                    for (Map<String, Object> row : results) {
+                        stmt.setString(paramIndex++, row.get("id").toString());
+                    }
+
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        while (rs.next()) {
+                            Map<String, Object> relation = new HashMap<>();
+                            relation.put("drug_id", rs.getString("drug_id"));
+                            relation.put("drug_name", rs.getString("drug_name"));
+                            relation.put("gene_id", rs.getString("gene_id"));
+                            relation.put("gene_name", rs.getString("gene_name"));
+                            drugGeneRelations.add(relation);
+                        }
+                    }
+                } catch (SQLException e) {
+                    log.error("Error during drug-gene relation query", e);
+                }
+            });
+
+            request.setAttribute("drugGeneRelations", drugGeneRelations);
         }
 
         request.setAttribute("results", results);
