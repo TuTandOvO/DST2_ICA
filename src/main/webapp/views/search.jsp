@@ -118,18 +118,12 @@
         <h1 class="search-title"><i class="bi bi-search"></i> Database Search</h1>
         <form method="get" action="<%=request.getContextPath()%>/search" class="search-form">
             <div class="form-floating">
-                <select id="database" name="database" class="form-select">
-                    <option value="drug">Drug Database</option>
-                    <option value="gene_info">Gene Database</option>
-                    <option value="disease_info">Disease Database</option>
-                </select>
-                <label for="database">Database</label>
-            </div>
-            <div class="form-floating">
                 <select id="table" name="table" class="form-select">
-                    <option value="">All Tables</option>
+                    <option value="drug">Drug</option>
+                    <option value="gene_info">Gene</option>
+                    <option value="disease_info">Disease</option>
                 </select>
-                <label for="table">Table</label>
+                <label for="table">Search Table</label>
             </div>
             <div class="form-floating">
                 <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Enter keyword" required>
@@ -147,17 +141,19 @@
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <c:forEach var="columnName" items="${results[0].keySet()}">
-                        <th>${fn:escapeXml(columnName)}</th>
-                    </c:forEach>
+                    <th>Drug ID</th>
+                    <th>Drug Name</th>
+                    <th>Gene Symbol</th>
+                    <th>Disease Name</th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach var="row" items="${results}">
                     <tr>
-                        <c:forEach var="value" items="${row.values()}">
-                            <td>${fn:escapeXml(value)}</td>
-                        </c:forEach>
+                        <td>${fn:escapeXml(row['Drug ID'])}</td>
+                        <td>${fn:escapeXml(row['Drug Name'])}</td>
+                        <td>${fn:escapeXml(row['Gene Symbol'])}</td>
+                        <td>${fn:escapeXml(row['Disease Name'])}</td>
                     </tr>
                 </c:forEach>
                 </tbody>
@@ -165,7 +161,8 @@
         </div>
     </c:if>
 
-    <c:if test="${not empty results && (database eq 'drug' || table eq 'drug' || table eq 'dosing_guideline' || table eq 'drug_label')}">
+    <!-- 修改可视化图的显示条件 -->
+    <c:if test="${not empty relationships}">
         <div id="cy"></div>
     </c:if>
 </div>
@@ -199,105 +196,190 @@
 <script>
     $(document).ready(function() {
         if (document.getElementById('cy')) {
+            console.log("Starting visualization...");
             const elements = [];
             const nodeMap = new Map();
 
-            // 添加药物节点
-            <c:forEach var="row" items="${results}">
-            const drugId = '${row.id}';
-            if (!nodeMap.has(drugId)) {
-                nodeMap.set(drugId, {
-                    id: drugId,
-                    name: '${row.name}',
-                    type: 'Drug'
-                });
-                elements.push({
-                    group: 'nodes',
-                    data: nodeMap.get(drugId)
-                });
-            }
-            </c:forEach>
-
-            // 添加基因节点和关系
-            <c:forEach var="relation" items="${drugGeneRelations}">
-            const geneId = '${relation.gene_id}';
-            if (!nodeMap.has(geneId)) {
-                nodeMap.set(geneId, {
-                    id: geneId,
-                    name: '${relation.gene_name}',
-                    type: 'Gene'
-                });
-                elements.push({
-                    group: 'nodes',
-                    data: nodeMap.get(geneId)
-                });
-            }
-
-            // 添加药物-基因关系边
-            elements.push({
-                group: 'edges',
-                data: {
-                    id: '${relation.drug_id}_${relation.gene_id}',
-                    source: '${relation.drug_id}',
-                    target: geneId,
-                    type: 'DrugGene'
+            <c:forEach var="relation" items="${relationships}">
+            // 添加药物节点（如果存在）
+            if ('${relation.drug_id}' && '${relation.drug_name}' && '${relation.drug_name}' !== 'null') {
+                const drugId = 'drug_${relation.drug_id}';
+                if (!nodeMap.has(drugId)) {
+                    nodeMap.set(drugId, {
+                        id: drugId,
+                        name: '${relation.drug_name}',
+                        type: 'Drug'
+                    });
+                    elements.push({
+                        group: 'nodes',
+                        data: nodeMap.get(drugId)
+                    });
                 }
-            });
+            }
+
+            // 添加基因节点（如果存在）
+            if ('${relation.gene_id}' && '${relation.gene_symbol}' && '${relation.gene_symbol}' !== 'null') {
+                const geneId = 'gene_${relation.gene_id}';
+                if (!nodeMap.has(geneId)) {
+                    nodeMap.set(geneId, {
+                        id: geneId,
+                        name: '${relation.gene_symbol}',
+                        type: 'Gene'
+                    });
+                    elements.push({
+                        group: 'nodes',
+                        data: nodeMap.get(geneId)
+                    });
+                }
+            }
+
+            // 添加疾病节点（如果存在）
+            if ('${relation.disease_id}' && '${relation.disease_name}' && '${relation.disease_name}' !== 'null') {
+                const diseaseId = 'disease_${relation.disease_id}';
+                if (!nodeMap.has(diseaseId)) {
+                    nodeMap.set(diseaseId, {
+                        id: diseaseId,
+                        name: '${relation.disease_name}',
+                        type: 'Disease'
+                    });
+                    elements.push({
+                        group: 'nodes',
+                        data: nodeMap.get(diseaseId)
+                    });
+                }
+            }
+
+            // 添加药物-基因关系（如果两端节点都存在）
+            if ('${relation.drug_id}' && '${relation.gene_id}') {
+                const drugId = 'drug_${relation.drug_id}';
+                const geneId = 'gene_${relation.gene_id}';
+                const edgeId = `dg_${relation.drug_id}_${relation.gene_id}`;
+
+                if (nodeMap.has(drugId) && nodeMap.has(geneId)) {
+                    elements.push({
+                        group: 'edges',
+                        data: {
+                            id: edgeId,
+                            source: drugId,
+                            target: geneId,
+                            type: 'DrugGene'
+                        }
+                    });
+                }
+            }
+
+            // 添加基因-疾病关系（如果两端节点都存在）
+            if ('${relation.gene_id}' && '${relation.disease_id}') {
+                const geneId = 'gene_${relation.gene_id}';
+                const diseaseId = 'disease_${relation.disease_id}';
+                const edgeId = `gd_${relation.gene_id}_${relation.disease_id}`;
+
+                if (nodeMap.has(geneId) && nodeMap.has(diseaseId)) {
+                    elements.push({
+                        group: 'edges',
+                        data: {
+                            id: edgeId,
+                            source: geneId,
+                            target: diseaseId,
+                            type: 'GeneDisease'
+                        }
+                    });
+                }
+            }
             </c:forEach>
 
-            const cy = cytoscape({
-                container: document.getElementById('cy'),
-                elements: elements,
-                style: [
-                    {
-                        selector: 'node',
-                        style: {
-                            'label': 'data(name)',
-                            'text-valign': 'center',
-                            'text-halign': 'center',
-                            'font-size': '12px',
-                            'text-wrap': 'wrap',
-                            'text-max-width': '80px'
+            console.log("Elements to render:", elements);
+
+            if (elements.length > 0) {
+                const cy = cytoscape({
+                    container: document.getElementById('cy'),
+                    elements: elements,
+                    style: [
+                        {
+                            selector: 'node',
+                            style: {
+                                'label': 'data(name)',
+                                'text-wrap': 'wrap',
+                                'text-valign': 'center',
+                                'text-halign': 'center',
+                                'font-size': '12px',
+                                'width': '60px',
+                                'height': '60px',
+                                'color': '#000000',
+                                'text-outline-width': 2,
+                                'text-outline-color': '#ffffff'
+                            }
+                        },
+                        {
+                            selector: 'node[type="Drug"]',
+                            style: {
+                                'background-color': '#6FB1FC',
+                                'shape': 'hexagon',
+                                'text-outline-color': '#6FB1FC'
+                            }
+                        },
+                        {
+                            selector: 'node[type="Gene"]',
+                            style: {
+                                'background-color': '#86B342',
+                                'shape': 'rectangle',
+                                'width': '80px',
+                                'height': '40px',
+                                'text-outline-color': '#86B342'
+                            }
+                        },
+                        {
+                            selector: 'node[type="Disease"]',
+                            style: {
+                                'background-color': '#FF6B6B',
+                                'shape': 'diamond',
+                                'text-outline-color': '#FF6B6B'
+                            }
+                        },
+                        {
+                            selector: 'edge',
+                            style: {
+                                'width': 2,
+                                'curve-style': 'bezier',
+                                'target-arrow-shape': 'triangle',
+                                'arrow-scale': 1.5,
+                                'line-color': '#ccc'
+                            }
+                        },
+                        {
+                            selector: 'edge[type="DrugGene"]',
+                            style: {
+                                'line-color': '#6FB1FC',
+                                'target-arrow-color': '#6FB1FC'
+                            }
+                        },
+                        {
+                            selector: 'edge[type="GeneDisease"]',
+                            style: {
+                                'line-color': '#FF6B6B',
+                                'target-arrow-color': '#FF6B6B'
+                            }
                         }
-                    },
-                    {
-                        selector: 'node[type="Drug"]',
-                        style: {
-                            'background-color': '#6FB1FC',
-                            'shape': 'hexagon'
-                        }
-                    },
-                    {
-                        selector: 'node[type="Gene"]',
-                        style: {
-                            'background-color': '#86B342',
-                            'shape': 'rectangle'
-                        }
-                    },
-                    {
-                        selector: 'edge',
-                        style: {
-                            'width': 2,
-                            'line-color': '#ccc',
-                            'curve-style': 'bezier'
-                        }
-                    },
-                    {
-                        selector: 'edge[type="DrugGene"]',
-                        style: {
-                            'line-color': '#86B342',
-                            'line-style': 'dashed'
-                        }
+                    ],
+                    layout: {
+                        name: 'cose',
+                        padding: 50,
+                        nodeRepulsion: 8000,
+                        idealEdgeLength: 100,
+                        animate: false,
+                        randomize: true
                     }
-                ],
-                layout: {
-                    name: 'cose',
-                    padding: 50,
-                    nodeRepulsion: 8000,
-                    idealEdgeLength: 100,
-                    animate: false
-                }
-            });
+                });
+
+                // 添加缩放控制
+                cy.on('render', function() {
+                    cy.fit();
+                    cy.center();
+                });
+            } else {
+                console.log("No elements to display");
+                document.getElementById('cy').innerHTML = '<div style="text-align: center; padding: 20px;">No relationships found to visualize</div>';
+            }
         }
     });
 </script>
