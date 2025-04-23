@@ -23,13 +23,16 @@ public class VisitCounterFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        // 获取访问路径 eg: /haining_biomed_war/statistics
         String requestURI = httpRequest.getRequestURI();
+        // 获取当前面的上下文 haining_biomed_war
         String contextPath = httpRequest.getContextPath();
         
         // 去除上下文路径，得到相对URI
+        // /statistics
         String relativeURI = requestURI.substring(contextPath.length());
         
-        // 只统计页面访问，不统计静态资源和AJAX请求
+        // 只统计页面访问，不统计静态资源
         if (!relativeURI.startsWith("/static/") && !relativeURI.equals("/counter")) {
             // 增加内存中的总访问计数（兼容性考虑）
             CounterServlet.incrementCounter(request.getServletContext());
