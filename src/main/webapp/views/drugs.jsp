@@ -23,6 +23,8 @@
     <link href="<%=request.getContextPath()%>/static/bootstrap/css/bootstrap.css" rel="stylesheet">
     <script src="<%=request.getContextPath()%>/static/jquery/jquery-3.4.1.js"></script>
     <script src="<%=request.getContextPath()%>/static/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
     <!-- Custom styles for this template -->
     <link href="<%=request.getContextPath()%>/static/css/app.css" rel="stylesheet">
     <style>
@@ -72,6 +74,14 @@
                             <td>${item.name}</td>
                             <td>${item.drugUrl}</td>
                             <td>${item.biomarker}</td>
+                            <td>
+                                <!-- Add to Favorites Button -->
+                                <form action="addFavorite" method="POST">
+                                    <input type="hidden" name="userId" value="${user.id}" /> <!-- 当前用户ID -->
+                                    <input type="hidden" name="drugId" value="${item.id}" /> <!-- 当前药品ID -->
+                                    <button type="submit" class="btn btn-primary">Add to Favorites</button>
+                                </form>
+                            </td>
                         </tr>
                     </c:forEach>
 

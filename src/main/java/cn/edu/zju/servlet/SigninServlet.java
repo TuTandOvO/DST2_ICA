@@ -15,6 +15,7 @@ public class SigninServlet extends HttpServlet {
 
     private static final String USERNAME_1 = "zju";
     private static final String PASSWORD_1 = "zju";
+    private static final int USER_ID_1 = 1;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String username = request.getParameter("username");
@@ -23,6 +24,7 @@ public class SigninServlet extends HttpServlet {
             HttpSession session = request.getSession();
             session.setAttribute(AuthenticationFilter.ROLE_VIEW_DOSING_GUIDELINE, 1);
             session.setAttribute(AuthenticationFilter.USERNAME, USERNAME_1);
+            session.setAttribute("userId", USER_ID_1);
             response.sendRedirect("index");
         } else {
             request.setAttribute("error", "username or password error");

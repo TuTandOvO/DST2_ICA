@@ -46,4 +46,23 @@ public class DBUtils {
             }
         }
     }
+
+    public static void close(Connection connection, AutoCloseable... closeables) {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                log.info("", e);
+            }
+        }
+        for (AutoCloseable closeable : closeables) {
+            if (closeable != null) {
+                try {
+                    closeable.close();
+                } catch (Exception e) {
+                    log.info("", e);
+                }
+            }
+        }
+    }
 }
