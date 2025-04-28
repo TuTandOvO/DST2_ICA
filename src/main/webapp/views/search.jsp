@@ -163,6 +163,19 @@
 
     <!-- 修改可视化图的显示条件 -->
     <c:if test="${not empty relationships}">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="form-group">
+                <label for="layoutSelect">Choose Layout:</label>
+                <select id="layoutSelect" class="form-select">
+                    <option value="cose">COSE Layout</option>
+                    <option value="grid">Grid Layout</option>
+                    <option value="circle">Circle Layout</option>
+                    <option value="concentric">Concentric Layout</option>
+                    <option value="breadthfirst">Breadthfirst Layout</option>
+                </select>
+            </div>
+            <button id="exportButton" class="btn btn-secondary">Export as PNG</button>
+        </div>
         <div id="cy"></div>
     </c:if>
 </div>
@@ -371,10 +384,53 @@
                     }
                 });
 
-                // 添加缩放控制
-                cy.on('render', function() {
-                    cy.fit();
-                    cy.center();
+                // 添加鼠标悬停事件
+                cy.on('mouseover', 'node', function (event) {
+                    const node = event.target;
+                    node.qtip({
+                        content: `Type: ${node.data('type')}<br>Name: ${node.data('name')}`,
+                        show: { event: event.type, ready: true },
+                        hide: { event: 'mouseout' },
+                        style: {
+                            classes: 'qtip-bootstrap',
+                            tip: { width: 10, height: 10 }
+                        }
+                    });
+                });
+
+                // 添加点击删除节点功能
+                cy.on('tap', 'node', function (event) {
+                    const node = event.target;
+                    const nodeName = node.data('name');
+                    const confirmDelete = confirm(`Are you sure you want to delete the node: ${nodeName}?`);
+                    if (confirmDelete) {
+                        // 删除节点及其相关的边
+                        node.remove();
+
+                        // 检查并删除没有边连接的节点
+                        cy.nodes().forEach(n => {
+                            if (n.degree() === 0) {
+                                n.remove();
+                            }
+                        });
+
+                        alert(`Node "${nodeName}" and any disconnected nodes have been deleted.`);
+                    }
+                });
+
+                // 添加布局切换功能
+                document.getElementById('layoutSelect').addEventListener('change', function () {
+                    const selectedLayout = this.value;
+                    cy.layout({ name: selectedLayout }).run();
+                });
+
+                // 添加导出功能
+                document.getElementById('exportButton').addEventListener('click', function () {
+                    const pngData = cy.png();
+                    const link = document.createElement('a');
+                    link.href = pngData;
+                    link.download = 'graph.png';
+                    link.click();
                 });
             } else {
                 console.log("No elements to display");
