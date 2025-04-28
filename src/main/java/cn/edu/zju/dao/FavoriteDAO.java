@@ -54,3 +54,4 @@ public class FavoriteDAO {
         return favorites;
     }
 }
+
