@@ -7,6 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page isELIgnored="false" %>
 
 <!DOCTYPE html>
@@ -25,17 +26,15 @@
     <table class="table table-striped">
         <thead>
         <tr>
-            <th>#</th>
             <th>Drug Name</th>
-            <th>Drug URL</th>
+            <th>Created At</th>
         </tr>
         </thead>
         <tbody>
         <c:forEach items="${favorites}" var="favorite">
             <tr>
-                <td>${favorite.id}</td>
                 <td>${favorite.drugId}</td> <!-- Assuming you have a mapping for drugId -->
-                <td>${favorite.createdAt}</td>
+                <td><fmt:formatDate value="${favorite.createdAt}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
             </tr>
         </c:forEach>
         </tbody>
