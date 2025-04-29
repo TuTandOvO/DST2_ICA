@@ -9,11 +9,38 @@
 <%@ page isELIgnored="false" %>
 <nav class="col-md-2 d-none d-md-block bg-light sidebar">
     <div class="sidebar-sticky">
+<%--        <ul class="nav flex-column">--%>
+<%--            <li class="nav-item">--%>
+<%--                <a class='nav-link ${param.active == "dashboard" ? "active" : ""}' href="<%=request.getContextPath()%>/">--%>
+<%--                    <span data-feather="home"></span>--%>
+<%--                    Dashboard <span class="sr-only">(current)</span>--%>
+<%--                </a>--%>
+<%--            </li>--%>
+<%--            <li class="nav-item">--%>
+<%--                <a class='nav-link ${param.active == "statistics" ? "active" : ""}' href="<%=request.getContextPath()%>/statistics">--%>
+<%--                    <span data-feather="bar-chart-2"></span>--%>
+<%--                    Query Summary--%>
+<%--                </a>--%>
+<%--            </li>--%>
+<%--        </ul>--%>
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a class='nav-link ${param.active == "dashboard" ? "active" : ""}' href="<%=request.getContextPath()%>/">
                     <span data-feather="home"></span>
                     Dashboard <span class="sr-only">(current)</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class='nav-link ${param.active == "matching_index" ? "active" : ""}' href="<%=request.getContextPath()%>/matchingIndex">
+                    <span data-feather="file"></span>
+                    Matching
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class='nav-link ${param.active == "samples" ? "active" : ""}' href="<%=request.getContextPath()%>/samples">
+                    <span data-feather="file"></span>
+                    Samples
                 </a>
             </li>
             <li class="nav-item">
@@ -23,7 +50,6 @@
                 </a>
             </li>
         </ul>
-
         <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
             <span>Precision Medicine Knowledge Base</span>
             <a class="d-flex align-items-center text-muted" href="#">

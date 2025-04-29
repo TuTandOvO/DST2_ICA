@@ -8,4 +8,28 @@
   <welcome-file-list>
     <welcome-file>index</welcome-file>
   </welcome-file-list>
+
+  <servlet>
+    <servlet-name>dispatchServlet</servlet-name>
+    <servlet-class>cn.edu.zju.servlet.DispatchServlet</servlet-class>
+    <multipart-config>
+      <file-size-threshold>0</file-size-threshold>
+      <max-file-size>209715200</max-file-size>
+      <max-request-size>209715200</max-request-size>
+    </multipart-config>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>jsp</servlet-name>
+    <url-pattern>/views/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>/static/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>dispatchServlet</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
 </web-app>
