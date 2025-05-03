@@ -1,3 +1,10 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: hello
+  Date: 2019-12-3
+  Time: 17:04
+  To change this template use File | Settings | File Templates.
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page isELIgnored="false" %>
 <!DOCTYPE html>
@@ -11,11 +18,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         /* 为导航链接添加过渡动画 */
-        .sidebar.nav-link {
+        .sidebar .nav-link {
             transition: all 0.3s ease;
         }
         /* 导航链接悬停时的样式 */
-        .sidebar.nav-link:hover {
+        .sidebar .nav-link:hover {
             background-color: #e9ecef;
             transform: translateX(5px);
         }
@@ -26,25 +33,25 @@
     <div class="sidebar-sticky">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class='nav-link ${param.active == "dashboard"?"active":""}' href="<%=request.getContextPath()%>/">
+                <a class='nav-link ${param.active == "dashboard" ? "active" : ""}' href="<%=request.getContextPath()%>/">
                     <i class="fa-solid fa-house me-2"></i>
                     Dashboard <span class="sr-only">(current)</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class='nav-link ${param.active == "matching_index"?"active":""}' href="<%=request.getContextPath()%>/matchingIndex">
+                <a class='nav-link ${param.active == "matching_index" ? "active" : ""}' href="<%=request.getContextPath()%>/matchingIndex">
                     <i class="fa-solid fa-file me-2"></i>
                     Matching
                 </a>
             </li>
             <li class="nav-item">
-                <a class='nav-link ${param.active == "samples"?"active":""}' href="<%=request.getContextPath()%>/samples">
+                <a class='nav-link ${param.active == "samples" ? "active" : ""}' href="<%=request.getContextPath()%>/samples">
                     <i class="fa-solid fa-file me-2"></i>
                     Samples
                 </a>
             </li>
             <li class="nav-item">
-                <a class='nav-link ${param.active == "statistics"?"active":""}' href="<%=request.getContextPath()%>/statistics">
+                <a class='nav-link ${param.active == "statistics" ? "active" : ""}' href="<%=request.getContextPath()%>/statistics">
                     <i class="fa-solid fa-chart-bar me-2"></i>
                     Query Summary
                 </a>
@@ -58,19 +65,19 @@
         </h6>
         <ul class="nav flex-column mb-2">
             <li class="nav-item">
-                <a class='nav-link ${param.active == "drugs"?"active":""}' href="<%=request.getContextPath()%>/drugs">
+                <a class='nav-link ${param.active == "drugs" ? "active" : ""}' href="<%=request.getContextPath()%>/drugs">
                     <i class="fa-solid fa-pills me-2"></i>
                     Drugs
                 </a>
             </li>
             <li class="nav-item">
-                <a class='nav-link ${param.active == "drug_labels"?"active":""}' href="<%=request.getContextPath()%>/drugLabels">
+                <a class='nav-link ${param.active == "drug_labels" ? "active" : ""}' href="<%=request.getContextPath()%>/drugLabels">
                     <i class="fa-solid fa-file-medical me-2"></i>
                     Drug Labels
                 </a>
             </li>
             <li class="nav-item">
-                <a class='nav-link ${param.active == "dosing_guideline"?"active":""}' href="<%=request.getContextPath()%>/dosingGuideline">
+                <a class='nav-link ${param.active == "dosing_guideline" ? "active" : ""}' href="<%=request.getContextPath()%>/dosingGuideline">
                     <i class="fa-solid fa-prescription-bottle me-2"></i>
                     Dosing Guideline
                 </a>
