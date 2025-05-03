@@ -11,7 +11,6 @@
     <link href="<%=request.getContextPath()%>/static/bootstrap/css/bootstrap.css" rel="stylesheet">
     <script src="<%=request.getContextPath()%>/static/jquery/jquery-3.4.1.js"></script>
     <script src="<%=request.getContextPath()%>/static/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom styles for this template -->
     <link href="<%=request.getContextPath()%>/static/css/app.css" rel="stylesheet">
 
     <!-- Bootstrap Icons -->
@@ -20,10 +19,6 @@
     <style>
         .bd-placeholder-img {
             font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
             user-select: none;
         }
 
@@ -35,10 +30,7 @@
     </style>
 </head>
 <body>
-<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Precision Medicine Matching System</a>
-
-</nav>
+<jsp:include page="head.jsp" />
 
 <div class="container-fluid">
     <div class="row">
@@ -57,34 +49,39 @@
             <!-- ✅ 统计卡片展示区 -->
             <div class="row text-center mb-4">
                 <div class="col-md-4">
-                    <div class="card shadow-sm border-primary">
-                        <div class="card-body">
-                            <i class="bi bi-diagram-3 display-4 text-primary"></i>
-                            <h5 class="card-title mt-2">Involved Genes</h5>
-                            <p class="card-text display-4 text-primary">${geneCount}</p>
+                    <a href="views/involvedGenesOverview.jsp">
+                        <div class="card shadow-sm border-primary">
+                            <div class="card-body">
+                                <i class="bi bi-diagram-3 display-4 text-primary"></i>
+                                <h5 class="card-title mt-2">Involved Genes</h5>
+                                <p class="card-text display-4 text-primary">${geneCount}</p>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-md-4">
-                    <div class="card shadow-sm border-success">
-                        <div class="card-body">
-                            <i class="bi bi-capsule display-4 text-success"></i>
-                            <h5 class="card-title mt-2">Dosing Guidelines</h5>
-                            <p class="card-text display-4 text-success">${dosingCount}</p>
+                    <a href="views/dosingGuidelines.jsp">
+                        <div class="card shadow-sm border-success">
+                            <div class="card-body">
+                                <i class="bi bi-capsule display-4 text-success"></i>
+                                <h5 class="card-title mt-2">Dosing Guidelines</h5>
+                                <p class="card-text display-4 text-success">${dosingCount}</p>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-md-4">
-                    <div class="card shadow-sm border-danger">
-                        <div class="card-body">
-                            <i class="bi bi-heart-pulse display-4 text-danger"></i>
-                            <h5 class="card-title mt-2">Diseases</h5>
-                            <p class="card-text display-4 text-danger">${diseaseCount}</p>
+                    <a href="views/diseases.jsp">
+                        <div class="card shadow-sm border-danger">
+                            <div class="card-body">
+                                <i class="bi bi-heart-pulse display-4 text-danger"></i>
+                                <h5 class="card-title mt-2">Diseases</h5>
+                                <p class="card-text display-4 text-danger">${diseaseCount}</p>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
-
             <!-- 欢迎词 -->
             <div class="table-responsive">
                 Welcome to use Precision Medicine Matching System
