@@ -19,7 +19,12 @@ public class SampleDao extends BaseDao {
                 PreparedStatement preparedStatement = connection.prepareStatement("insert into sample(created_at, uploaded_by) values (?,?)", Statement.RETURN_GENERATED_KEYS);
                 preparedStatement.setTimestamp(1, new Timestamp(new Date().getTime()));
                 preparedStatement.setString(2, uploadedBy);
-                key.set(preparedStatement.executeUpdate());
+				preparedStatement.executeUpdate();
+                ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                while (generatedKeys.next()) {
+                    key.set(generatedKeys.getInt(1));
+                }
+
             } catch (SQLException e) {
                 e.printStackTrace();
             }
