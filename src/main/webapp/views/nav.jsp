@@ -7,6 +7,8 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page isELIgnored="false" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <nav class="col-md-2 d-none d-md-block bg-light sidebar">
     <div class="sidebar-sticky">
         <ul class="nav flex-column">
@@ -43,13 +45,14 @@
                     Dosing Guideline
                 </a>
             </li>
-            <li class="nav-item">
-                <a class='nav-link ${param.active == "favorites" ? "active" : ""}' href="<%=request.getContextPath()%>/favorite">
-                    <span data-feather="file-text"></span>
-                    My favorites
-                </a>
-            </li>
-
+            <c:if test="${not empty sessionScope.userId}">
+                <li class="nav-item">
+                    <a class='nav-link ${param.active == "favorite" ? "active" : ""}' href="<%=request.getContextPath()%>/favorite">
+                        <span data-feather="file-text"></span>
+                        My favorites
+                    </a>
+                </li>
+            </c:if>
         </ul>
     </div>
 </nav>
