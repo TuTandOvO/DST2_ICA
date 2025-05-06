@@ -2,27 +2,64 @@
 <%@ page isELIgnored="false" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <html>
 <head>
     <title>Search</title>
     <link href="<%=request.getContextPath()%>/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="<%=request.getContextPath()%>/static/jquery/jquery-3.4.1.js"></script>
+    <script src="<%=request.getContextPath()%>/static/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <%String column = request.getParameter("column");%>
+    <script>
+        $(document).ready(function () {
+            $('#table').change(function () {
+                const selectedTable = $(this).val();
+                if (selectedTable) {
+                    $.ajax({
+                        url: '<%=request.getContextPath()%>/getColumn', // 确保 URL 正确
+                        method: 'GET',
+                        data: { table: selectedTable },
+                        success: function (data) {
+                            console.log(data); // 打印从服务器返回的数据
+                            const columnSelect = $('#column');
+                            columnSelect.empty();
+                            columnSelect.append('<option value="">All Columns</option>');
+                            data.forEach(function (column) {
+                                columnSelect.append('<option value="' + column + '">' + column + '</option>');
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("AJAX request failed:", status, error);
+                            alert('Failed to load columns.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 </head>
 <body>
 <div class="container mt-5">
-    <h1>Search Database</h1>
+    <h1>Search Table</h1>
     <form method="get" action="<%=request.getContextPath()%>/search" class="form-inline">
         <div class="form-group">
-            <label for="database" class="sr-only">Database</label>
-            <select id="database" name="database" class="form-control">
-                <option value="drug">Drug Database</option>
-                <option value="gene_info">Gene Database</option>
-                <option value="disease_info">Disease Database</option>
+            <label for="table" class="sr-only">Table</label>
+            <select id="table" name="table" class="form-control">
+                <option value="">Select Table</option>
+                <option value="drug">Drug Table</option>
+                <option value="gene_info">Gene Table</option>
+                <option value="disease_info">Disease Table</option>
+                <option value="disease_gene">Disease-Gene Table</option>
+                <option value="drug_label">Drug Label Table</option>
+                <option value="gene_drug">Gene-Drug Table</option>
+                <option value="dosing_guideline">Dosing Guideline Table</option>
+
             </select>
         </div>
         <div class="form-group ml-2">
-            <label for="table" class="sr-only">Table</label>
-            <select id="table" name="table" class="form-control">
-                <option value="">All Tables</option>
+            <label for="column" class="sr-only">Column</label>
+            <select id="column" name="column" class="form-control">
+                <option value="">All Columns</option>
             </select>
         </div>
         <div class="form-group ml-2">
@@ -36,9 +73,7 @@
 
     <c:choose>
         <c:when test="${not empty results}">
-            <h2>Search Results in <strong>${fn:escapeXml(database)}</strong>
-                <c:if test="${not empty table}"> - Table: <strong>${fn:escapeXml(table)}</strong></c:if>:
-            </h2>
+            <h2>Search Results in <strong>${fn:escapeXml(table)}</strong> - Column: <strong>${fn:escapeXml(column)}</strong>:</h2>
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -59,37 +94,9 @@
             </table>
         </c:when>
         <c:otherwise>
-            <p>No results found for "<strong>${fn:escapeXml(param.keyword)}</strong>".</p>
+            <p>No results found for "<strong>${fn:escapeXml(keyword)}</strong>".</p>
         </c:otherwise>
     </c:choose>
 </div>
-<script src="<%=request.getContextPath()%>/static/jquery/jquery-3.4.1.min.js"></script>
-<script src="<%=request.getContextPath()%>/static/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $('#database').change(function () {
-            const selectedDatabase = $(this).val();
-            if (selectedDatabase) {
-                $.ajax({
-                    url: '<%=request.getContextPath()%>/getTables', // 修改为获取表名的Servlet
-                    method: 'GET',
-                    data: { database: selectedDatabase },
-                    success: function (data) {
-                        const tableSelect = $('#table');
-                        tableSelect.empty();
-                        tableSelect.append('<option value="">All Tables</option>');
-                        data.forEach(function (table) {
-                            tableSelect.append('<option value="' + table + '">' + table + '</option>');
-                        });
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("AJAX request failed:", status, error);
-                        alert('Failed to load tables.');
-                    }
-                });
-            }
-        });
-    });
-</script>
 </body>
 </html>

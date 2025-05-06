@@ -23,31 +23,33 @@ public class SearchServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String keyword = request.getParameter("keyword");
-        String database = request.getParameter("database");
         String table = request.getParameter("table");
+        String column = request.getParameter("column");
 
         log.info("Keyword received: " + keyword);
-        log.info("Database selected: " + database);
         log.info("Table selected: " + table);
+        log.info("Column selected: " + column);
 
         List<Map<String, Object>> results = new ArrayList<>();
-        String queryTarget = (table == null || table.isEmpty()) ? database : table;
+        String queryTarget = (column == null || column.isEmpty()) ? table : column;
 
         if (keyword != null && !keyword.trim().isEmpty()) {
             DBUtils.execSQL(conn -> {
                 List<String> columns = null;
                 try {
-                    columns = getColumns(conn, queryTarget);
+                    columns = getColumns(conn, table); // 使用表名
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
-                StringBuilder sql = new StringBuilder("SELECT * FROM " + queryTarget + " WHERE ");
+                StringBuilder sql = new StringBuilder("SELECT * FROM " + table + " WHERE "); // 使用表名
                 for (int i = 0; i < columns.size(); i++) {
                     sql.append(columns.get(i)).append(" LIKE ?");
                     if (i < columns.size() - 1) {
                         sql.append(" OR ");
                     }
                 }
+
+                log.info("Constructed SQL query: " + sql.toString()); // 打印调试日志
 
                 try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
                     for (int i = 1; i <= columns.size(); i++) {
@@ -73,8 +75,8 @@ public class SearchServlet extends HttpServlet {
 
         request.setAttribute("results", results);
         request.setAttribute("keyword", keyword);
-        request.setAttribute("database", database);
         request.setAttribute("table", table);
+        request.setAttribute("column", column);
         request.getRequestDispatcher("/views/search.jsp").forward(request, response);
     }
 
