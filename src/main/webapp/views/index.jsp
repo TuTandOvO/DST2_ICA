@@ -49,9 +49,14 @@
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h2>Dashboard</h2>
-                <a href="${pageContext.request.contextPath}/help" class="btn btn-outline-info btn-sm">
-                    Help
-                </a>
+                <div>
+                    <a href="${pageContext.request.contextPath}/views/search.jsp" class="btn btn-outline-info btn-sm">
+                        Search
+                    </a>
+                    <a href="${pageContext.request.contextPath}/help" class="btn btn-outline-info btn-sm">
+                        Help
+                    </a>
+                </div>
             </div>
 
             <!-- ✅ 统计卡片展示区 -->
