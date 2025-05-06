@@ -75,7 +75,7 @@
 <div class="navbar">
     <div><strong>DST2_ICA</strong></div>
     <div>
-        <a href="<c:url value='/views/index.jsp'/>">Home</a>
+        <a href="<c:url value='/'/>">Home</a>
         <a href="<c:url value='/views/help.jsp'/>">Help</a>
         <a href="<c:url value='/views/search.jsp'/>">Search</a>
     </div>
