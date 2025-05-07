@@ -108,6 +108,266 @@
     <%String column = request.getParameter("column");%>
 </head>
 <body>
+<!-- 顶部导航栏 -->
+<div class="navbar">
+    <div><strong>DST2_ICA</strong></div>
+    <div>
+        <a href="<c:url value='/views/index.jsp'/>">Home</a>
+        <a href="<c:url value='/views/help.jsp'/>">Help</a>
+        <a href="<c:url value='/views/search.jsp'/>">Search</a>
+    </div>
+</div>
+<c:if test="${not empty relationships}">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="form-group">
+            <label for="layoutSelect">Choose Layout:</label>
+            <select id="layoutSelect" class="form-select">
+                <option value="cose">COSE Layout</option>
+                <option value="grid">Grid Layout</option>
+                <option value="circle">Circle Layout</option>
+                <option value="concentric">Concentric Layout</option>
+                <option value="breadthfirst">Breadthfirst Layout</option>
+            </select>
+        </div>
+        <button id="exportButton" class="btn btn-secondary">Export as PNG</button>
+    </div>
+    <div id="cy"></div>
+</c:if>
+
+<script>
+    $(document).ready(function () {
+        if (document.getElementById('cy')) {
+            const elements = [];
+            const nodeMap = new Map();
+
+            <c:forEach var="relation" items="${relationships}">
+            // Add Drug Node
+            if ('${relation.drug_id}' && '${relation.drug_name}' && '${relation.drug_name}' !== 'null') {
+                const drugId = 'drug_${relation.drug_id}';
+                if (!nodeMap.has(drugId)) {
+                    nodeMap.set(drugId, {
+                        id: drugId,
+                        name: '${relation.drug_name}',
+                        type: 'Drug'
+                    });
+                    elements.push({
+                        group: 'nodes',
+                        data: nodeMap.get(drugId)
+                    });
+                }
+            }
+
+            // Add Gene Node
+            if ('${relation.gene_id}' && '${relation.gene_symbol}' && '${relation.gene_symbol}' !== 'null') {
+                const geneId = 'gene_${relation.gene_id}';
+                if (!nodeMap.has(geneId)) {
+                    nodeMap.set(geneId, {
+                        id: geneId,
+                        name: '${relation.gene_symbol}',
+                        type: 'Gene'
+                    });
+                    elements.push({
+                        group: 'nodes',
+                        data: nodeMap.get(geneId)
+                    });
+                }
+            }
+
+            // Add Disease Node
+            if ('${relation.disease_id}' && '${relation.disease_name}' && '${relation.disease_name}' !== 'null') {
+                const diseaseId = 'disease_${relation.disease_id}';
+                if (!nodeMap.has(diseaseId)) {
+                    nodeMap.set(diseaseId, {
+                        id: diseaseId,
+                        name: '${relation.disease_name}',
+                        type: 'Disease'
+                    });
+                    elements.push({
+                        group: 'nodes',
+                        data: nodeMap.get(diseaseId)
+                    });
+                }
+            }
+
+            // Add Drug-Gene Edge
+            if ('${relation.drug_id}' && '${relation.gene_id}') {
+                const drugId = 'drug_${relation.drug_id}';
+                const geneId = 'gene_${relation.gene_id}';
+                const edgeId = `dg_${relation.drug_id}_${relation.gene_id}`;
+
+                if (nodeMap.has(drugId) && nodeMap.has(geneId)) {
+                    elements.push({
+                        group: 'edges',
+                        data: {
+                            id: edgeId,
+                            source: drugId,
+                            target: geneId,
+                            type: 'DrugGene'
+                        }
+                    });
+                }
+            }
+
+            // Add Gene-Disease Edge
+            if ('${relation.gene_id}' && '${relation.disease_id}') {
+                const geneId = 'gene_${relation.gene_id}';
+                const diseaseId = 'disease_${relation.disease_id}';
+                const edgeId = `gd_${relation.gene_id}_${relation.disease_id}`;
+
+                if (nodeMap.has(geneId) && nodeMap.has(diseaseId)) {
+                    elements.push({
+                        group: 'edges',
+                        data: {
+                            id: edgeId,
+                            source: geneId,
+                            target: diseaseId,
+                            type: 'GeneDisease'
+                        }
+                    });
+                }
+            }
+            </c:forEach>
+
+            const cy = cytoscape({
+                container: document.getElementById('cy'),
+                elements: elements,
+                style: [
+                    {
+                        selector: 'node',
+                        style: {
+                            'label': 'data(name)',
+                            'text-wrap': 'wrap',
+                            'text-valign': 'center',
+                            'text-halign': 'center',
+                            'font-size': '12px',
+                            'width': '60px',
+                            'height': '60px',
+                            'color': '#000000',
+                            'text-outline-width': 2,
+                            'text-outline-color': '#ffffff'
+                        }
+                    },
+                    {
+                        selector: 'node[type="Drug"]',
+                        style: {
+                            'background-color': '#6FB1FC',
+                            'shape': 'hexagon',
+                            'text-outline-color': '#6FB1FC'
+                        }
+                    },
+                    {
+                        selector: 'node[type="Gene"]',
+                        style: {
+                            'background-color': '#86B342',
+                            'shape': 'rectangle',
+                            'width': '80px',
+                            'height': '40px',
+                            'text-outline-color': '#86B342'
+                        }
+                    },
+                    {
+                        selector: 'node[type="Disease"]',
+                        style: {
+                            'background-color': '#FF6B6B',
+                            'shape': 'diamond',
+                            'text-outline-color': '#FF6B6B'
+                        }
+                    },
+                    {
+                        selector: 'edge',
+                        style: {
+                            'width': 2,
+                            'curve-style': 'bezier',
+                            'target-arrow-shape': 'triangle',
+                            'arrow-scale': 1.5,
+                            'line-color': '#ccc'
+                        }
+                    },
+                    {
+                        selector: 'edge[type="DrugGene"]',
+                        style: {
+                            'line-color': '#6FB1FC',
+                            'target-arrow-color': '#6FB1FC'
+                        }
+                    },
+                    {
+                        selector: 'edge[type="GeneDisease"]',
+                        style: {
+                            'line-color': '#FF6B6B',
+                            'target-arrow-color': '#FF6B6B'
+                        }
+                    }
+                ],
+                layout: {
+                    name: 'cose',
+                    padding: 50,
+                    nodeRepulsion: 8000,
+                    idealEdgeLength: 100,
+                    animate: false,
+                    randomize: true
+                }
+            });
+
+            // Layout change
+            document.getElementById('layoutSelect').addEventListener('change', function () {
+                const selectedLayout = this.value;
+                cy.layout({ name: selectedLayout }).run();
+            });
+
+            // Export graph
+            document.getElementById('exportButton').addEventListener('click', function () {
+                const pngData = cy.png();
+                const link = document.createElement('a');
+                link.href = pngData;
+                link.download = 'graph.png';
+                link.click();
+            });
+        }
+    });
+</script>
+    <c:if test="${not empty results}">
+    <div class="result-count">Found ${fn:length(results)} results</div>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Drug ID</th>
+                <th>Drug Name</th>
+                <th>Gene Symbol</th>
+                <th>Disease Name</th>
+            </tr>
+            </thead>
+            <tbody>
+            <c:forEach var="row" items="${results}">
+                <tr>
+                    <td>${fn:escapeXml(row['Drug ID'])}</td>
+                    <td>${fn:escapeXml(row['Drug Name'])}</td>
+                    <td>${fn:escapeXml(row['Gene Symbol'])}</td>
+                    <td>${fn:escapeXml(row['Disease Name'])}</td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+    </div>
+    </c:if>
+
+    <!-- 修改可视化图的显示条件 -->
+    <c:if test="${not empty relationships}">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="form-group">
+            <label for="layoutSelect">Choose Layout:</label>
+            <select id="layoutSelect" class="form-select">
+                <option value="cose">COSE Layout</option>
+                <option value="grid">Grid Layout</option>
+                <option value="circle">Circle Layout</option>
+                <option value="concentric">Concentric Layout</option>
+                <option value="breadthfirst">Breadthfirst Layout</option>
+            </select>
+        </div>
+        <button id="exportButton" class="btn btn-secondary">Export as PNG</button>
+    </div>
+    <div id="cy"></div>
+    </c:if>
 <script>
     $(document).ready(function () {
         $('#table').change(function () {

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @WebServlet("/search")
 public class SearchServlet extends HttpServlet {
@@ -25,17 +26,18 @@ public class SearchServlet extends HttpServlet {
         String keyword = request.getParameter("keyword");
         String table = request.getParameter("table");
         String column = request.getParameter("column");
+        List<Map<String, Object>> results = new ArrayList<>();
+        List<Map<String, Object>> relationships = new ArrayList<>();
 
         log.info("Keyword received: " + keyword);
         log.info("Table selected: " + table);
         log.info("Column selected: " + column);
-
-        List<Map<String, Object>> results = new ArrayList<>();
         String queryTarget = (column == null || column.isEmpty()) ? table : column;
 
         if (keyword != null && !keyword.trim().isEmpty()) {
             DBUtils.execSQL(conn -> {
                 List<String> columns = null;
+
                 try {
                     columns = getColumns(conn, table); // 使用表名
                 } catch (SQLException e) {
