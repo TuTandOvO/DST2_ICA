@@ -130,6 +130,9 @@
             <label for="column" class="sr-only">Column</label>
             <select id="column" name="column" class="form-control">
                 <option value="">All Columns</option>
+                <c:forEach var="col" items="${columns}">
+                    <option value="${col}">${col}</option>
+                </c:forEach>
             </select>
         </div>
         <div class="form-group ml-2">
