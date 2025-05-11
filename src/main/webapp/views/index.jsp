@@ -56,12 +56,22 @@
 
             <!-- ✅ 统计卡片展示区 -->
             <div class="row text-center mb-4">
+                <style>
+                    .stat-card {
+                        transition: all 0.3s ease;
+                        cursor: pointer;
+                    }
+                    .stat-card:hover {
+                        transform: scale(1.03);
+                    }
+                    .stat-card-primary:hover { box-shadow: 0 0 15px rgba(0, 123, 255, 0.2); }
+                    .stat-card-success:hover { box-shadow: 0 0 15px rgba(40, 167, 69, 0.2); }
+                    .stat-card-danger:hover { box-shadow: 0 0 15px rgba(220, 53, 69, 0.2); }
+                </style>
+
                 <div class="col-md-4">
-                    <a href="views/involvedGenesOverview.jsp" style="text-decoration: none;">
-                        <div class="card shadow-sm border-primary"
-                             style="transition: all 0.3s ease; cursor: pointer;"
-                             onmouseover="this.style.transform='scale(1.03)'; this.style.boxShadow='0 0 15px rgba(0, 123, 255, 0.2)';"
-                             onmouseout="this.style.transform='scale(1)'; this.style.boxShadow=''; ">
+                    <a href="views/involvedGenesOverview.jsp" class="text-decoration-none">
+                        <div class="card shadow-sm border-primary stat-card stat-card-primary">
                             <div class="card-body">
                                 <i class="bi bi-diagram-3 display-4 text-primary"></i>
                                 <h5 class="card-title mt-2">Involved Genes</h5>
@@ -70,12 +80,10 @@
                         </div>
                     </a>
                 </div>
+
                 <div class="col-md-4">
-                    <a href="views/dosingGuidelines.jsp" style="text-decoration: none;">
-                        <div class="card shadow-sm border-success"
-                             style="transition: all 0.3s ease; cursor: pointer;"
-                             onmouseover="this.style.transform='scale(1.03)'; this.style.boxShadow='0 0 15px rgba(40, 167, 69, 0.2)';"
-                             onmouseout="this.style.transform='scale(1)'; this.style.boxShadow=''; ">
+                    <a href="views/dosingGuidelines.jsp" class="text-decoration-none">
+                        <div class="card shadow-sm border-success stat-card stat-card-success">
                             <div class="card-body">
                                 <i class="bi bi-capsule display-4 text-success"></i>
                                 <h5 class="card-title mt-2">Dosing Guidelines</h5>
@@ -84,12 +92,10 @@
                         </div>
                     </a>
                 </div>
+
                 <div class="col-md-4">
-                    <a href="views/diseases.jsp" style="text-decoration: none;">
-                        <div class="card shadow-sm border-danger"
-                             style="transition: all 0.3s ease; cursor: pointer;"
-                             onmouseover="this.style.transform='scale(1.03)'; this.style.boxShadow='0 0 15px rgba(220, 53, 69, 0.2)';"
-                             onmouseout="this.style.transform='scale(1)'; this.style.boxShadow=''; ">
+                    <a href="views/diseases.jsp" class="text-decoration-none">
+                        <div class="card shadow-sm border-danger stat-card stat-card-danger">
                             <div class="card-body">
                                 <i class="bi bi-heart-pulse display-4 text-danger"></i>
                                 <h5 class="card-title mt-2">Diseases</h5>
