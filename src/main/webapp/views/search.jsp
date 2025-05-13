@@ -15,6 +15,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Cytoscape.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.26.0/cytoscape.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qtip2@3.0.3/dist/jquery.qtip.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/qtip2@3.0.3/dist/jquery.qtip.min.css" rel="stylesheet">
     <style>
         body {
             background-color: #f8f9fa;
@@ -101,6 +103,25 @@
             margin: 0 15px;
             font-weight: bold;
         }
+        #floating-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        #floating-buttons.btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -113,33 +134,11 @@
         <a href="<c:url value='/views/search.jsp'/>">Search</a>
     </div>
 </div>
-<!-- 添加两个按钮，一个用于滚动到顶部，一个用于滚动到底部 -->
+<!-- 两个按钮，一个用于滚动到顶部，一个用于滚动到底部 -->
 <div id="floating-buttons">
     <button id="scrollToTop" class="btn btn-primary"><i class="bi bi-arrow-up"></i></button>
     <button id="scrollToBottom" class="btn btn-primary"><i class="bi bi-arrow-down"></i></button>
 </div>
-
-<style>
-    #floating-buttons {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        z-index: 1000;
-    }
-
-    #floating-buttons .btn {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-</style>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -431,7 +430,7 @@
                 cy.on('mouseover', 'node', function (event) {
                     const node = event.target;
                     node.qtip({
-                        content: `Type: ${node.data('type')}<br>Name: ${node.data('name')}`,
+                        content: `Type:` + node.data('type') + `<br>Name: ` + node.data('name'),
                         show: { event: event.type, ready: true },
                         hide: { event: 'mouseout' },
                         style: {
@@ -444,10 +443,8 @@
                 // 添加点击删除节点功能
                 cy.on('tap', 'node', function (event) {
                     const node = event.target;
-                    console.log('Node data:', node.data());
                     const nodeName = node.data('name') || 'Unknown';
-                    console.log('Node name:', nodeName);
-                    const confirmDelete = confirm(`Are you sure you want to delete the node: ${nodeName}?`);
+                    const confirmDelete = confirm(`Are you sure you want to delete the node: `+ nodeName + ` ?`);
                     if (confirmDelete) {
                         // 删除节点及其相关的边
                         node.remove();
@@ -459,7 +456,7 @@
                             }
                         });
 
-                        alert(`Node "${nodeName}" and any disconnected nodes have been deleted.`);
+                        alert(`Node ` + nodeName +` and any disconnected nodes have been deleted.`);
                     }
                 });
 
