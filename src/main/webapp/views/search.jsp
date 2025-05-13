@@ -113,6 +113,49 @@
         <a href="<c:url value='/views/search.jsp'/>">Search</a>
     </div>
 </div>
+<!-- 添加两个按钮，一个用于滚动到顶部，一个用于滚动到底部 -->
+<div id="floating-buttons">
+    <button id="scrollToTop" class="btn btn-primary"><i class="bi bi-arrow-up"></i></button>
+    <button id="scrollToBottom" class="btn btn-primary"><i class="bi bi-arrow-down"></i></button>
+</div>
+
+<style>
+    #floating-buttons {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 1000;
+    }
+
+    #floating-buttons .btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const scrollToTop = document.getElementById("scrollToTop");
+        const scrollToBottom = document.getElementById("scrollToBottom");
+
+        scrollToTop.addEventListener("click", function () {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        scrollToBottom.addEventListener("click", function () {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        });
+    });
+</script>
+
 <div class="container">
     <div class="search-container">
         <h1 class="search-title"><i class="bi bi-search"></i> Database Search</h1>
@@ -401,7 +444,9 @@
                 // 添加点击删除节点功能
                 cy.on('tap', 'node', function (event) {
                     const node = event.target;
-                    const nodeName = node.data('name');
+                    console.log('Node data:', node.data());
+                    const nodeName = node.data('name') || 'Unknown';
+                    console.log('Node name:', nodeName);
                     const confirmDelete = confirm(`Are you sure you want to delete the node: ${nodeName}?`);
                     if (confirmDelete) {
                         // 删除节点及其相关的边
